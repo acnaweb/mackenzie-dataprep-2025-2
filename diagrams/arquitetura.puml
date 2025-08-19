@@ -1,7 +1,23 @@
 @startuml
 
-object firstObject
-object "My Second Object" as o2
-object "My Second Object3" as o3
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Arquitetura de Dados (E-Commerce)
+footer Disponível em: https://github.com/acnaweb/mackenzie-dataprep-2025-2
+
+Person(customer, "Cliente", "Usuário final do e-commerce")
+
+Container(pubsub, "Cloud Pub/Sub", "Event Bus")
+Container(dataflow, "Dataflow", "Apache Beam")
+
+Container_Boundary(storage, "Lakehouse & DW") {
+    ContainerDb(gcs, "Cloud Storage (bronze)", "csv/Parquet/Avro", "Dados imutáveis")
+    ContainerDb(bq_bronze, "BigQuery (bronze)", "Tabelas Raw", "Consulta rápida e staging")
+}
+
+Rel(customer, pubsub, "Gera eventos via HTTP")
+Rel(pubsub, dataflow, "Eventos")
+Rel(dataflow, gcs, "Dump arquivos")
+Rel(dataflow, bq_bronze, "CDC Raw")
 
 @enduml
