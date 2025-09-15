@@ -1,7 +1,7 @@
 @startuml
-' ==============
-' ER - RAW SEEDS
-' ==============
+' =========================
+' ER — E-commerce Omnichannel (Gold + ponte com Silver)
+' =========================
 hide circle
 skinparam linetype ortho
 skinparam class {
@@ -9,178 +9,96 @@ skinparam class {
   BorderColor #888
 }
 
-' ===== Clientes / Geo =====
-entity "raw_customers" as raw_customers {
-  * customer_id : STRING <<PK?>>
+' ==========
+' DIMENSÕES
+' ==========
+entity "dim_customer" as dim_customer {
+  * customer_id : STRING <<PK>>
   --
   full_name : STRING
   email : STRING
   phone : STRING
-  zipcode : STRING
-  created_at : TIMESTAMP
-}
-
-entity "raw_geo_zipcode" as raw_geo_zipcode {
-  * zipcode : STRING <<PK>>
-  --
   city : STRING
   state : STRING
   region : STRING
+  created_at : TIMESTAMP
 }
 
-' Ligação direta (zipcode)
-raw_geo_zipcode ||--o{ raw_customers : "zipcode"
-
-' ===== Produtos / FX =====
-entity "raw_products" as raw_products {
+entity "dim_product" as dim_product {
   * product_id : STRING <<PK>>
   --
   sku : STRING
-  name : STRING
+  product_name : STRING
   category : STRING
-  price : NUMERIC
-  currency : STRING
+  current_price_brl : NUMERIC
   updated_at : TIMESTAMP
 }
 
-entity "raw_fx_rates" as raw_fx_rates {
-  * rate_date : DATE <<PK>>
-  * currency : STRING <<PK>>
+' Dimensão operacional (cabeçalho do pedido), derivada de stg_orders (Silver)
+entity "dim_order" as dim_order {
+  * order_id : STRING <<PK>>
   --
-  rate_to_brl : NUMERIC
-}
-
-' Ligação potencial (depende de data/currency)
-raw_fx_rates .. raw_products : "rate_date = DATE(updated_at)\n+ currency"
-
-' ===== Pedidos por canal =====
-entity "raw_orders_app" as raw_orders_app {
-  * order_id : STRING <<PK?>>
-  --
-  cust_id : STRING
+  customer_id : STRING <<FK dim_customer>>
   order_ts : TIMESTAMP
-  total_amount : FLOAT64
-  currency : STRING
-}
-
-entity "raw_orders_web" as raw_orders_web {
-  * order_code : STRING <<PK?>>
-  --
-  customer_id : STRING
-  order_datetime : STRING
-  gross_amount : NUMERIC
-  currency : STRING
-}
-
-entity "raw_orders_pos" as raw_orders_pos {
-  * pos_order_id : STRING <<PK?>>
-  --
-  loyalty_customer : STRING
   order_date : DATE
-  amount : NUMERIC
-  currency : STRING
+  channel : STRING       ' ex.: app, web, pos
+  amount_brl : NUMERIC   ' total convertido via FX
 }
 
-' FX para pedidos (potencial, via data/currency)
-raw_fx_rates .. raw_orders_app : "DATE(order_ts), currency"
-raw_fx_rates .. raw_orders_web : "DATE(PARSE_TS(order_datetime)), currency"
-raw_fx_rates .. raw_orders_pos : "order_date, currency"
-
-' ===== Itens de pedido =====
-entity "raw_order_items_app" as raw_order_items_app {
-  * order_id : STRING
+' ======
+' FATOS
+' ======
+entity "fact_order_item" as fact_order_item {
+  * order_id : STRING <<FK dim_order>>
+  * product_id : STRING <<FK dim_product>>
   --
-  product : STRING
-  qty : INT64
+  customer_id : STRING <<FK dim_customer>>
+  order_ts : TIMESTAMP
+  channel : STRING
+  quantity : INT64
   unit_price : NUMERIC
+  gross_item_amount : NUMERIC
+  order_amount_brl : NUMERIC
 }
 
-entity "raw_order_items_web" as raw_order_items_web {
-  * order_code : STRING
-  --
-  product_id : STRING
-  quantity : INT64
-  price : NUMERIC
-}
-
-entity "raw_order_items_pos" as raw_order_items_pos {
-  * pos_order_id : STRING
-  --
-  sku : STRING
-  quantity : INT64
-  price : NUMERIC
-}
-
-' Ligações diretas por chave de pedido (mesmo nome)
-raw_orders_app ||--o{ raw_order_items_app : "order_id"
-raw_orders_web ||--o{ raw_order_items_web : "order_code"
-raw_orders_pos ||--o{ raw_order_items_pos : "pos_order_id"
-
-' Ligações produto (heterogêneo)
-raw_products ||..o{ raw_order_items_app : "product = product_id (mapeamento)"
-raw_products ||--o{ raw_order_items_web : "product_id"
-raw_products ||..o{ raw_order_items_pos : "sku (via SKU)"
-
-' ===== Pagamentos =====
-entity "raw_payments" as raw_payments {
+entity "fact_payment" as fact_payment {
   * payment_id : STRING <<PK>>
   --
-  order_ref : STRING
-  method : STRING
-  status : STRING
-  paid_amount : NUMERIC
-  currency : STRING
+  order_id : STRING <<FK dim_order>>
+  method : STRING        ' card, pix, cash, boleto
+  status : STRING        ' authorized, captured, refunded
+  paid_amount_brl : NUMERIC
   paid_at : TIMESTAMP
 }
 
-' Referência polimórfica: pode apontar para qualquer canal (mapeamento necessário)
-raw_payments .. raw_orders_app : "order_ref ↔ order_id"
-raw_payments .. raw_orders_web : "order_ref ↔ order_code"
-raw_payments .. raw_orders_pos : "order_ref ↔ pos_order_id"
-
-' FX para pagamentos (potencial, via data/currency)
-raw_fx_rates .. raw_payments : "rate_date = DATE(paid_at), currency"
-
-' ===== Tráfego / Marketing =====
-entity "raw_events_web" as raw_events_web {
-  * event_id : STRING <<PK>>
+entity "fact_order_daily" as fact_order_daily {
+  * order_date : DATE
+  * channel : STRING
   --
-  customer_id : STRING
-  event_type : STRING
-  event_ts : TIMESTAMP
-  session_id : STRING
+  orders : INT64
+  revenue_brl : NUMERIC
+  unique_customers : INT64
 }
 
-entity "raw_marketing_clicks" as raw_marketing_clicks {
-  * click_id : STRING <<PK>>
-  --
-  customer_email : STRING
-  channel : STRING
-  campaign : STRING
-  clicked_at : TIMESTAMP
-}
+' =====================
+' RELACIONAMENTOS (PK/FK)
+' =====================
+' Clientes → Pedidos
+dim_customer ||--o{ dim_order : "customer_id"
 
-' Ligações de audiência
-raw_customers ||--o{ raw_events_web : "customer_id"
-raw_customers ||..o{ raw_marketing_clicks : "LOWER(email) = LOWER(customer_email)"
+' Pedidos → Itens / Pagamentos
+dim_order ||--o{ fact_order_item : "order_id"
+dim_order ||--o{ fact_payment : "order_id"
 
-' ===== Notas Didáticas =====
-note top of raw_orders_app
-Chaves e nomes heterogêneos:
-- Cliente: cust_id
-- Pedido: order_id
-- Data: order_ts (TIMESTAMP)
-end note
+' Produtos → Itens
+dim_product ||--o{ fact_order_item : "product_id"
 
-note top of raw_orders_web
-Chaves e tipos heterogêneos:
-- Pedido: order_code
-- Data: order_datetime (STRING)
-end note
+' Clientes → Itens (redundante, guard rail analítico)
+dim_customer ||--o{ fact_order_item : "customer_id"
 
-note right of raw_order_items_pos
-Produto por SKU (não product_id).
-Requer mapeamento para raw_products.sku.
-end note
+' Agregação diária (derivado de pedidos/itens)
+' Representamos como associação não-estrita (traço pontilhado)
+fact_order_item ..> fact_order_daily : "aggregate by date, channel"
+dim_order ..> fact_order_daily : "source for daily rollups"
 
 @enduml
