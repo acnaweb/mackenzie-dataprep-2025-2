@@ -2,7 +2,14 @@
 
 Projeto da disciplina de Data Preparation / MBA Engenharia de Dados
 
-## Data Transformation
+
+# Diagramas
+
+![](out/diagrams/er-raw/er-raw.png)
+
+
+![](out/diagrams/er-star/er-star.png)
+
 
 # 📊 Tarefas de Data Transformation
 
