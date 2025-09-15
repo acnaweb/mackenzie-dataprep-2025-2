@@ -7,6 +7,7 @@ Projeto da disciplina de Data Preparation / MBA Engenharia de Dados
 
 ![](out/diagrams/er-raw/er-raw.png)
 
+--- 
 
 ![](out/diagrams/er-star/er-star.png)
 
