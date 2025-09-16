@@ -1,6 +1,5 @@
-mensagem:
-	@echo "Deu certo"
-	@echo Mensagem 2
-
-msg: mensagem
-	@date
+install:
+	python -m venv venv
+	. venv/bin/activate
+	pip install --upgrade pip
+	pip install -r requirements.txt
