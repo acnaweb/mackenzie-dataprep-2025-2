@@ -56,18 +56,18 @@ dbt docs serve --profiles-dir=$DBT_PROFILE_DIR
 
 # 📊 Tarefas de Data Transformation
 
-| **Etapa** | **Descrição** | **Exemplo prático (BigQuery SQL)** |
-|-----------|---------------|-------------------------------------|
-| **Data Discovery & Interpretation** | Explorar fontes de dados e entender a estrutura atual para desenhar o formato de destino. | `SELECT * FROM raw_orders LIMIT 10;` |
-| **Data Cleansing** | Corrigir erros, tratar valores nulos, remover duplicados ou dados inválidos. | `SELECT DISTINCT user_id FROM raw_users WHERE email IS NOT NULL;` |
-| **Data Normalization** | Padronizar formatos, escalas e unidades. | `CAST(price AS NUMERIC)` ou `LOWER(email)` |
-| **Data Aggregation** | Resumir dados em métricas. | `SELECT customer_id, SUM(amount) AS total_spent FROM silver_orders GROUP BY customer_id;` |
+| **Etapa** | **Descrição** | **Exemplo prático (PostgreSQL SQL)** |
+|-----------|---------------|---------------------------------------|
+| **Data Discovery & Interpretation** | Explorar fontes e entender estrutura atual. | `SELECT * FROM raw_orders LIMIT 10;` |
+| **Data Cleansing** | Corrigir erros, tratar nulos, remover duplicados. | `SELECT DISTINCT user_id FROM raw_users WHERE email IS NOT NULL;` |
+| **Data Normalization** | Padronizar formatos, escalas e unidades. | `CAST(price AS NUMERIC)` / `LOWER(email)` |
+| **Data Aggregation** | Resumir dados em métricas. | `SELECT customer_id, SUM(amount) FROM silver_orders GROUP BY customer_id;` |
 | **Data Filtering** | Selecionar subconjuntos de interesse. | `SELECT * FROM silver_orders WHERE order_date >= '2025-01-01';` |
-| **Data Manipulation** | Criar colunas derivadas com cálculos e atributos novos. | `DATEDIFF(CURRENT_DATE(), signup_date) AS days_active` |
-| **Data Mapping** | Relacionar campos de origem com destino. | `raw_orders.customer_id → silver_orders.customer_id` |
-| **Data Enrichment** | Acrescentar contexto externo para aumentar valor da análise. | `JOIN geo_data ON users.zipcode = geo_data.zipcode` |
-| **Data Integration/Combining** | Unir diferentes tabelas/fontes para visão unificada. | `JOIN orders o ON o.customer_id = c.customer_id` |
-| **Data Validation** | Garantir consistência e qualidade dos dados transformados. | `dbt test: unique, not_null, accepted_values` |
+| **Data Manipulation** | Criar colunas derivadas. | `AGE(NOW(), signup_date) AS customer_age` |
+| **Data Mapping** | Relacionar colunas de origem/destino. | `raw_orders.customer_id → silver_orders.customer_id` |
+| **Data Enrichment** | Adicionar contexto externo. | `JOIN geo_data ON customers.zipcode = geo_data.zipcode` |
+| **Data Integration/Combining** | Unir diferentes tabelas/fontes. | `JOIN orders o ON o.customer_id = c.customer_id` |
+| **Data Validation** | Validar integridade e consistência. | `CHECK (amount > 0)` ou testes dbt (`unique`, `not_null`) |
 
 
 # 📋 Template de Transformation Mapping
