@@ -1,0 +1,5 @@
+product_id,sku,name,category,price,currency,updated_at
+P1,SKU-001,Camiseta Básica,Roupas,50,BRL,2025-09-01 12:00:00
+P2,SKU-002,Notebook X200,Eletrônicos,800,USD,2025-09-01 12:00:00
+P3,SKU-003,Smartphone Z5,Eletrônicos,1200,USD,2025-09-01 12:00:00
+P4,SKU-004,Tênis Runner,Calçados,300,BRL,2025-09-01 12:00:00

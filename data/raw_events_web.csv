@@ -1,0 +1,5 @@
+event_id,customer_id,event_type,event_ts,session_id
+E1,C1,view,2025-09-01 09:50:00,S1
+E2,C1,add_to_cart,2025-09-01 09:55:00,S1
+E3,C2,view,2025-09-01 10:30:00,S2
+E4,C3,checkout,2025-09-02 09:50:00,S3
