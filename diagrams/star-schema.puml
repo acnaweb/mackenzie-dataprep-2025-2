@@ -1,4 +1,4 @@
-@startuml
+@startuml star-schema
 ' =========================
 ' ER — E-commerce Omnichannel (Gold + ponte com Silver)
 ' =========================

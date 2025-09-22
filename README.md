@@ -70,6 +70,14 @@ dbt docs serve --profiles-dir=$DBT_PROFILE_DIR
 | **Data Validation** | Validar integridade e consistência. | `CHECK (amount > 0)` ou testes dbt (`unique`, `not_null`) |
 
 
+# 📊  Conexão com dbt
+
+- Discovery → feito antes do modelo, explorando dados seeds ou staging.
+- Cleansing, Normalization, Filtering, Manipulation → normalmente no layer Silver (staging models em dbt).
+- Aggregation, Integration, Enrichment → aplicados em layer Gold (mart models em dbt).
+- Mapping → documentado em schema.yml e refletido em ref() entre modelos.
+- Validation → implementado com dbt tests (unique, not_null, accepted_values, testes customizados).
+
 # 📋 Template de Transformation Mapping
 
 Este template deve ser preenchido pelos alunos ao mapear a transformação de **Bronze (RAW)** → **Silver** → **Gold**.
