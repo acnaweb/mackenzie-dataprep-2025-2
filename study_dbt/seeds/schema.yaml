@@ -1,0 +1,29 @@
+version: 2
+
+seeds:
+  - name: raw_customers
+    description: "Seed contendo a lista de clientes bruta, utilizada na camada RAW."
+    config:
+      schema: raw
+      column_types:
+        customer_id: text
+        full_name: text
+        email: text
+        phone: text
+        zipcode: text
+        created_at: timestamp
+    columns:
+      - name: customer_id
+        description: "Identificador único do cliente."
+        tests:
+          - not_null
+      - name: full_name
+        description: "Nome completo do cliente."
+      - name: email
+        description: "Email informado pelo cliente."
+      - name: phone
+        description: "Telefone do cliente no formato nacional ou internacional."
+      - name: zipcode
+        description: "CEP do cliente (formato brasileiro, 8 dígitos)."
+      - name: created_at
+        description: "Data e hora de criação/registro do cliente."

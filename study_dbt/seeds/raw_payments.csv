@@ -1,0 +1,5 @@
+payment_id,order_ref,method,status,paid_amount,currency,paid_at
+PAY1,A1,card,captured,100,BRL,2025-09-01 10:05:00
+PAY2,A2,card,authorized,250,USD,2025-09-01 11:05:00
+PAY3,W1,pix,captured,75.2,USD,2025-09-02 09:05:00
+PAY4,P2,cash,captured,500,USD,2025-09-03 12:00:00
