@@ -1,0 +1,13 @@
+version: 2
+
+seeds:
+  - name: raw_customers
+    description: "Seed contendo a lista de clientes bruta, utilizada na camada RAW."
+    config:
+      column_types:
+        customer_id: text
+        full_name: text
+        email: text
+        phone: text
+        zipcode: text
+        created_at: timestamp

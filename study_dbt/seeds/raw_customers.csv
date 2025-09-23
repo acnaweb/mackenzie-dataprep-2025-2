@@ -1,5 +1,5 @@
 customer_id,full_name,email,phone,zipcode,created_at
-C1,Ana Silva,ANA@GMAIL.COM,5511999999999,01311000,2025-08-28 10:00:00
+C1,Ana Silva,ANA@GMAIL.COM,55555,01311000,2025-08-28 10:00:00
 C2,joao Souza,joao@example.com,,22290030,2025-08-29 09:00:00
 C2,João Souza,JOAO@example.com,,22290030,2025-08-29 09:10:00
-C3,Mariana Lima,mariana.lima@outlook.com,5521998888888,30140071,2025-09-01 08:30:00
+C3,Mariana Lima,mariana.lima@outlook.com,5555555,30140071,2025-09-01 08:30:00
