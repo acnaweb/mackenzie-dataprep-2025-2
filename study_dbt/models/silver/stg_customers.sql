@@ -1,28 +1,36 @@
 with base as (
-	select 
-		c.customer_id, 
-		c.full_name,		
-		lower(c.email) as email,
-		c.phone, 
-		c.zipcode	
-	from {{ ref('raw_customers') }} as c 
-), geo as (
-	select 
-		geo.zipcode,
-		geo.city,
-		geo.state,
-		geo.region
-	from {{ ref('raw_geo_zipcode') }} as geo 
+  select 
+    customer_id,
+    initcap(full_name) as full_name,
+    lower(email) as email,
+    regexp_replace(coalesce(phone,''), '\D', '', 'g') as phone,
+    zipcode,
+    created_at
+  from {{ ref('raw_customers') }}
+),
+dedup as (
+  select *
+  from (
+    select
+      b.*,
+      row_number() over (partition by customer_id order by created_at desc nulls last) as rn
+    from base b
+  ) x
+  where rn = 1
+),
+geo as (
+  select zipcode, city, state, region
+  from {{ ref('raw_geo_zipcode') }}
 )
 select
-	base.customer_id,
-	base.full_name,
-	base.email,
-	base.phone,
-	geo.zipcode,
-	geo.city,
-	geo.state,
-	geo.region
-from base join geo 
-	on base.zipcode = geo.zipcode
- 
+  d.customer_id,
+  d.full_name,
+  d.email,
+  d.phone,
+  d.zipcode,
+  g.city,
+  g.state,
+  g.region,
+  d.created_at
+from dedup d
+left join geo g on d.zipcode = g.zipcode
