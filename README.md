@@ -47,11 +47,11 @@ dbt docs serve --profiles-dir=$DBT_PROFILE_DIR
 
 # Diagramas
 
-![](out/diagrams/er-raw/er-raw.png)
+![](diagrams/der-raw.png)
 
 --- 
 
-![](out/diagrams/er-star/er-star.png)
+![](diagrams/star-schema.png)
 
 
 # 📊 Tarefas de Data Transformation
