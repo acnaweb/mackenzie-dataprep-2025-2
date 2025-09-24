@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: stg_order_items
+    description: "Itens de pedidos com produtos resolvidos e valores normalizados."
+    columns:
+      - name: quantity
+        description: "Quantidade do item."
+        tests:
+          - not_null
+
+
