@@ -11,3 +11,11 @@ seeds:
         phone: text
         zipcode: text
         created_at: timestamp
+  - name: raw_geo_zipcode
+    description: "Seed contendo referencias de geolocalização, utilizada na camada RAW."
+    config:
+      column_types:
+        zipcode: text
+        city: text
+        state: text
+        region: text
