@@ -33,3 +33,5 @@ models:
   study_dbt:
     silver:
       +materialized: table
+    gold:
+      +materialized: table
