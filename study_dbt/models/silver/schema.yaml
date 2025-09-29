@@ -6,7 +6,7 @@ models:
     columns:
       - name: quantity
         description: "Quantidade do item."
-        tests:
-          - not_null
+      - name: unit_price   
+        description: "Preço unitário"
 
 

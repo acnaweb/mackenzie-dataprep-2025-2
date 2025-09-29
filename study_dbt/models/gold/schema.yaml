@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: "Cadastro de clientes"
+    columns:
+      - name: customer_id
+        data_tests:
+          - not_null
+          - unique
+      - name: phone
+        description: "Fone do cliente"  
+        data_tests:
+          - not_null
+      - name: state
+        description: "Unidade de Federação"
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['SP', 'MG', 'RJ']
+  - name: fact_order_item
+    description: "Itens dos pedidos"
+    columns:
+      - name: customer_id
+        description: "Id do cliente"
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref("dim_customer")
+                field: customer_id
+
